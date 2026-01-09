@@ -8,6 +8,7 @@ import (
 
 	"github.com/IhsanAlhakim/go-auth-api/pkg/database"
 	"github.com/IhsanAlhakim/go-auth-api/pkg/mux"
+	"github.com/IhsanAlhakim/go-auth-api/pkg/routes"
 	"github.com/joho/godotenv"
 )
 
@@ -25,9 +26,8 @@ func main() {
 	}
 
 	mux := mux.New()
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Connection OK"))
-	})
+
+	routes.Register(mux)
 
 	server := new(http.Server)
 	server.Addr = ":8080"
