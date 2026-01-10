@@ -12,4 +12,7 @@ func Register(mux *mux.Mux) {
 		w.Write([]byte("Connection OK"))
 	})
 	mux.HandleFunc("GET /users/{id}", handlers.GetUser)
+	mux.HandleFunc("POST /users", handlers.CreateUser)
+	mux.HandleFunc("PUT /users/{id}", handlers.UpdateUser)
+	mux.HandleFunc("DELETE /users/{id}", handlers.DeleteUser)
 }

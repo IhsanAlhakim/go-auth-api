@@ -10,6 +10,8 @@ type Payload struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+type P = Payload
+
 var (
 	ServerError = "The server encountered an error, please try again later"
 )
