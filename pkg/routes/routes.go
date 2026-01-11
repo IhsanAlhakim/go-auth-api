@@ -15,4 +15,6 @@ func Register(mux *mux.Mux) {
 	mux.HandleFunc("POST /users", handlers.CreateUser)
 	mux.HandleFunc("PUT /users/{id}", handlers.UpdateUser)
 	mux.HandleFunc("DELETE /users/{id}", handlers.DeleteUser)
+	mux.HandleFunc("POST /sessions", handlers.SignIn)
+	mux.HandleFunc("DELETE /sessions", handlers.SignOut)
 }

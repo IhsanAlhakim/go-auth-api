@@ -25,6 +25,17 @@ func main() {
 		log.Fatal("Failed to connect to the database")
 	}
 
+	store, err := database.NewSessionStore()
+	if err != nil {
+		log.Fatal("Failed to create session store")
+	}
+
+	defer func() {
+		if err := store.Close(); err != nil {
+			log.Printf("Error closing store: %v\n", err)
+		}
+	}()
+
 	mux := mux.New()
 
 	routes.Register(mux)
