@@ -10,7 +10,7 @@ import (
 
 var db *sql.DB
 
-func Connect() error {
+func Connect() (*sql.DB, error) {
 	config := mysql.NewConfig()
 	config.User = os.Getenv("DB_USERNAME")
 	config.Passwd = os.Getenv("DB_PASSWORD")
@@ -22,11 +22,11 @@ func Connect() error {
 
 	db, err = sql.Open("mysql", config.FormatDSN())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	log.Println("Connected to database")
-	return nil
+	return db, nil
 }
 
 func GetDB() *sql.DB {
