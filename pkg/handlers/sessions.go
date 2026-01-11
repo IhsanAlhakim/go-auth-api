@@ -17,30 +17,36 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 
 	var credentials User
 
-	DecodeRequestBody(w, r, &credentials)
+	if err := DecodeRequestBody(w, r, &credentials); err != nil {
+		return
+	}
 
 	var user User
 
 	row := db.QueryRow("SELECT username, password FROM users WHERE email = ?", credentials.Email)
 	if err := row.Scan(&user.Username, &user.Password); err != nil {
 		if err == sql.ErrNoRows {
-			Response(w, P{Message: "User not found"}, http.StatusNotFound)
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
 		}
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 	switch {
 	case err == bcrypt.ErrMismatchedHashAndPassword:
-		Response(w, P{Message: "Incorrect Sign In Credentials"}, http.StatusUnauthorized)
+		http.Error(w, "Incorrect sign in credentials", http.StatusUnauthorized)
+		return
 	case err != nil:
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
-
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	session, err := store.Get(r, database.SessionID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	session.Values["userID"] = user.Username
 	session.Save(r, w)
@@ -52,6 +58,7 @@ func SignOut(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, database.SessionID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	session.Options.MaxAge = -1
 	session.Save(r, w)
