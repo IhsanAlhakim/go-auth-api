@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/IhsanAlhakim/go-auth-api/pkg/database"
-	"github.com/IhsanAlhakim/go-auth-api/pkg/handlers"
 	"github.com/boj/redistore"
 )
 
@@ -14,10 +13,15 @@ func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			store = database.GetSessionStore()
-			session, _ := store.Get(r, database.SessionID)
+			session, err := store.Get(r, database.SessionID)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
 			if session.Values["userID"] == nil {
-				handlers.Response(w, handlers.Payload{Message: "User not authenticated"}, http.StatusUnauthorized)
+				http.Error(w, "User not authenticated", http.StatusUnauthorized)
 				return
 			}
 			next.ServeHTTP(w, r)
