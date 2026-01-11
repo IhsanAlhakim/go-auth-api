@@ -25,9 +25,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	row := db.QueryRow("SELECT username, email FROM users WHERE id = ?", id)
 	if err := row.Scan(&user.Username, &user.Email); err != nil {
 		if err == sql.ErrNoRows {
-			Response(w, P{Message: "Data not found"}, http.StatusNotFound)
+			http.Error(w, "User not found", http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		return
 	}
 	Response(w, P{Data: user}, http.StatusOK)
 }
@@ -36,15 +38,19 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	db = database.GetDB()
 	var user User
 
-	DecodeRequestBody(w, r, &user)
+	if err := DecodeRequestBody(w, r, &user); err != nil {
+		return
+	}
+
 	hashedPassword, err := utils.GenerateHashPassword(w, user.Password)
 	if err != nil {
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		return
 	}
 
 	_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", user.Username, user.Email, hashedPassword)
 	if err != nil {
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	Response(w, P{Message: "User Created!"}, http.StatusCreated)
 }
@@ -55,11 +61,14 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user User
 
-	DecodeRequestBody(w, r, &user)
+	if err := DecodeRequestBody(w, r, &user); err != nil {
+		return
+	}
 
 	_, err := db.Exec("UPDATE users SET username = ?, email = ? WHERE id = ?", user.Username, user.Email, userId)
 	if err != nil {
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	Response(w, P{Message: "User Updated!"}, http.StatusOK)
 }
@@ -73,14 +82,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	row := db.QueryRow("SELECT username FROM users WHERE id = ?", userId)
 	if err := row.Scan(&user.Username); err != nil {
 		if err == sql.ErrNoRows {
-			Response(w, P{Message: "Data not found"}, http.StatusNotFound)
+			http.Error(w, "User not found", http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		return
 	}
 
 	_, err := db.Exec("DELETE FROM users WHERE id = ?", userId)
 	if err != nil {
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	Response(w, P{Message: "User Deleted!"}, http.StatusOK)
