@@ -12,15 +12,11 @@ type Payload struct {
 
 type P = Payload
 
-var (
-	ServerError = "The server encountered an error, please try again later"
-)
-
 func Response(w http.ResponseWriter, payload Payload, statusCode int) {
 	response, err := json.Marshal(payload)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(ServerError))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
