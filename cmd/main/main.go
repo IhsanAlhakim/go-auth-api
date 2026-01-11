@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -17,24 +16,20 @@ var db *sql.DB
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Failed to loading .env file: %v", err)
 	}
 
-	err = database.Connect()
+	db, err = database.Connect()
 	if err != nil {
-		log.Fatal("Failed to connect to the database")
+		log.Panicf("Failed to connect to the database: %v", err)
 	}
+	defer db.Close()
 
 	store, err := database.NewSessionStore()
 	if err != nil {
-		log.Fatal("Failed to create session store")
+		log.Panicf("Failed to create session store: %v", err)
 	}
-
-	defer func() {
-		if err := store.Close(); err != nil {
-			log.Printf("Error closing store: %v\n", err)
-		}
-	}()
+	defer store.Close()
 
 	mux := mux.New()
 
@@ -46,7 +41,6 @@ func main() {
 
 	log.Println("Server started at localhost:8080")
 	if err := server.ListenAndServe(); err != nil {
-		fmt.Println(err.Error())
-		log.Fatal("Shutting down server...")
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }
