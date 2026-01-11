@@ -6,13 +6,23 @@ import (
 	"net/http"
 )
 
-func DecodeRequestBody(w http.ResponseWriter, r *http.Request, payload any) {
+func DecodeRequestBody(w http.ResponseWriter, r *http.Request, payload any) error {
 	err := json.NewDecoder(r.Body).Decode(payload)
+
+	if err != nil {
+		if err == io.EOF {
+			http.Error(w, "Request body must not be empty", http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return err
+	}
 
 	switch {
 	case err == io.EOF:
-		Response(w, P{Message: "Request body must not be empty"}, http.StatusBadRequest)
+
 	case err != nil:
-		Response(w, P{Message: ServerError}, http.StatusInternalServerError)
+
 	}
+	return nil
 }
