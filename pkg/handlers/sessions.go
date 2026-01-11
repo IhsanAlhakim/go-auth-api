@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/IhsanAlhakim/go-auth-api/pkg/database"
+	"github.com/IhsanAlhakim/go-auth-api/pkg/utils"
 	"github.com/boj/redistore"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var store *redistore.RediStore
@@ -33,13 +33,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
-	switch {
-	case err == bcrypt.ErrMismatchedHashAndPassword:
-		http.Error(w, "Incorrect sign in credentials", http.StatusUnauthorized)
-		return
-	case err != nil:
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := utils.IsPasswordCorrect(w, user.Password, credentials.Password); err != nil {
 		return
 	}
 
