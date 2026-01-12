@@ -15,9 +15,21 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	db = database.GetDB()
 	store = database.GetSessionStore()
 
-	var credentials User
+	var credentials = struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
 
 	if err := DecodeRequestBody(w, r, &credentials); err != nil {
+		return
+	}
+
+	if err := utils.CheckStructEmptyProperty(credentials); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := utils.CheckStructWhitespaceProperty(credentials); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

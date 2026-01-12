@@ -18,11 +18,11 @@ var db *sql.DB
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	db = database.GetDB()
-	id := r.PathValue("id")
+	userId := r.PathValue("id")
 
 	var user User
 
-	row := db.QueryRow("SELECT username, email FROM users WHERE id = ?", id)
+	row := db.QueryRow("SELECT username, email FROM users WHERE id = ?", userId)
 	if err := row.Scan(&user.Username, &user.Email); err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "User not found", http.StatusNotFound)
@@ -36,9 +36,19 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	db = database.GetDB()
+
 	var user User
 
 	if err := DecodeRequestBody(w, r, &user); err != nil {
+		return
+	}
+
+	if err := utils.CheckStructEmptyProperty(user); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := utils.CheckStructWhitespaceProperty(user); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,9 +69,21 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	db = database.GetDB()
 	userId := r.PathValue("id")
 
-	var user User
+	var user = struct {
+		Email    string `json:"email"`
+		Username string `json:"username"`
+	}{}
 
 	if err := DecodeRequestBody(w, r, &user); err != nil {
+		return
+	}
+
+	if err := utils.CheckStructEmptyProperty(user); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := utils.CheckStructWhitespaceProperty(user); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
