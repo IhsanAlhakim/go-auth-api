@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/pkg/database"
-	"github.com/IhsanAlhakim/go-auth-api/pkg/mux"
-	"github.com/IhsanAlhakim/go-auth-api/pkg/routes"
+	"github.com/IhsanAlhakim/go-auth-api/internal/database"
+	"github.com/IhsanAlhakim/go-auth-api/internal/mux"
+	"github.com/IhsanAlhakim/go-auth-api/internal/routes"
 	"github.com/joho/godotenv"
 )
 

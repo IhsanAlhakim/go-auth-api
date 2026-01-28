@@ -3,9 +3,9 @@ package routes
 import (
 	"net/http"
 
-	h "github.com/IhsanAlhakim/go-auth-api/pkg/handlers"
-	m "github.com/IhsanAlhakim/go-auth-api/pkg/middlewares"
-	"github.com/IhsanAlhakim/go-auth-api/pkg/mux"
+	h "github.com/IhsanAlhakim/go-auth-api/internal/handlers"
+	m "github.com/IhsanAlhakim/go-auth-api/internal/middlewares"
+	"github.com/IhsanAlhakim/go-auth-api/internal/mux"
 )
 
 func Register(mux *mux.Mux) {

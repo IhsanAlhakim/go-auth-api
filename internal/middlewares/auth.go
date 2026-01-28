@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/pkg/database"
+	"github.com/IhsanAlhakim/go-auth-api/internal/database"
 	"github.com/boj/redistore"
 )
 

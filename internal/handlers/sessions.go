@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/pkg/database"
-	"github.com/IhsanAlhakim/go-auth-api/pkg/utils"
+	"github.com/IhsanAlhakim/go-auth-api/internal/database"
+	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
 	"github.com/boj/redistore"
 )
 
