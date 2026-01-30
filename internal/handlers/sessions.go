@@ -4,16 +4,10 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/internal/database"
 	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
-	"github.com/boj/redistore"
 )
 
-var store *redistore.RediStore
-
-func SignIn(w http.ResponseWriter, r *http.Request) {
-	db = database.GetDB()
-	store = database.GetSessionStore()
+func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	var credentials = struct {
 		Email    string `json:"email"`
@@ -35,7 +29,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 
 	var user User
 
-	row := db.QueryRow("SELECT username, password FROM users WHERE email = ?", credentials.Email)
+	row := h.db.QueryRow("SELECT username, password FROM users WHERE email = ?", credentials.Email)
 	if err := row.Scan(&user.Username, &user.Password); err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "User not found", http.StatusNotFound)
@@ -49,7 +43,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := store.Get(r, database.SessionID)
+	session, err := h.store.Get(r, h.cfg.SessionID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -60,8 +54,8 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	Response(w, P{Message: "Sign In Successfull"}, http.StatusOK)
 }
 
-func SignOut(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, database.SessionID)
+func (h *Handler) SignOut(w http.ResponseWriter, r *http.Request) {
+	session, err := h.store.Get(r, h.cfg.SessionID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

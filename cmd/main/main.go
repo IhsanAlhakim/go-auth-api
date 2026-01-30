@@ -7,6 +7,8 @@ import (
 
 	"github.com/IhsanAlhakim/go-auth-api/internal/config"
 	"github.com/IhsanAlhakim/go-auth-api/internal/database"
+	"github.com/IhsanAlhakim/go-auth-api/internal/handlers"
+	"github.com/IhsanAlhakim/go-auth-api/internal/middlewares"
 	"github.com/IhsanAlhakim/go-auth-api/internal/mux"
 	"github.com/IhsanAlhakim/go-auth-api/internal/routes"
 )
@@ -30,7 +32,11 @@ func main() {
 
 	mux := mux.New()
 
-	routes.Register(mux)
+	m := middlewares.New(store, cfg)
+
+	h := handlers.New(db, store, cfg)
+
+	routes.Register(mux, m, h)
 
 	server := new(http.Server)
 	server.Addr = ":8080"

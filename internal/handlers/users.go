@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/internal/database"
 	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
 )
 
@@ -14,15 +13,12 @@ type User struct {
 	Password string `json:"password,omitempty"`
 }
 
-var db *sql.DB
-
-func GetUser(w http.ResponseWriter, r *http.Request) {
-	db = database.GetDB()
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("id")
 
 	var user User
 
-	row := db.QueryRow("SELECT username, email FROM users WHERE id = ?", userId)
+	row := h.db.QueryRow("SELECT username, email FROM users WHERE id = ?", userId)
 	if err := row.Scan(&user.Username, &user.Email); err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "User not found", http.StatusNotFound)
@@ -34,8 +30,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	Response(w, P{Data: user}, http.StatusOK)
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	db = database.GetDB()
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user User
 
@@ -57,7 +52,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", user.Username, user.Email, hashedPassword)
+	_, err = h.db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", user.Username, user.Email, hashedPassword)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -65,8 +60,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	Response(w, P{Message: "User Created!"}, http.StatusCreated)
 }
 
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	db = database.GetDB()
+func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("id")
 
 	var user = struct {
@@ -87,7 +81,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := db.Exec("UPDATE users SET username = ?, email = ? WHERE id = ?", user.Username, user.Email, userId)
+	_, err := h.db.Exec("UPDATE users SET username = ?, email = ? WHERE id = ?", user.Username, user.Email, userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,13 +89,12 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	Response(w, P{Message: "User Updated!"}, http.StatusOK)
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	db = database.GetDB()
+func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("id")
 
 	var user User
 
-	row := db.QueryRow("SELECT username FROM users WHERE id = ?", userId)
+	row := h.db.QueryRow("SELECT username FROM users WHERE id = ?", userId)
 	if err := row.Scan(&user.Username); err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "User not found", http.StatusNotFound)
@@ -111,7 +104,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := db.Exec("DELETE FROM users WHERE id = ?", userId)
+	_, err := h.db.Exec("DELETE FROM users WHERE id = ?", userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

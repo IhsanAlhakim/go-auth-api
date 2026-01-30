@@ -3,17 +3,15 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/internal/database"
 	"github.com/boj/redistore"
 )
 
 var store *redistore.RediStore
 
-func Auth(next http.Handler) http.Handler {
+func (m *Middleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			store = database.GetSessionStore()
-			session, err := store.Get(r, database.SessionID)
+			session, err := m.store.Get(r, m.cfg.SessionID)
 
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
