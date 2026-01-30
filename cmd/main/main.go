@@ -39,7 +39,7 @@ func main() {
 	routes.Register(mux, m, h)
 
 	server := new(http.Server)
-	server.Addr = ":8080"
+	server.Addr = cfg.Port
 	server.Handler = mux
 
 	log.Println("Server started at localhost:8080")
