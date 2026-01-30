@@ -22,7 +22,7 @@ func main() {
 	}
 	defer db.Close()
 
-	store, err := database.NewSessionStore()
+	store, err := database.NewSessionStore(cfg)
 	if err != nil {
 		log.Panicf("Failed to create session store: %v", err)
 	}
