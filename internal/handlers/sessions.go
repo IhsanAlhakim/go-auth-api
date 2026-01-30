@@ -14,7 +14,12 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}{}
 
-	if err := DecodeRequestBody(w, r, &credentials); err != nil {
+	if err := BindJSON(r, &credentials); err != nil {
+		if err == ErrEmptyBody {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

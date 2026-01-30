@@ -34,7 +34,12 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user User
 
-	if err := DecodeRequestBody(w, r, &user); err != nil {
+	if err := BindJSON(r, &user); err != nil {
+		if err == ErrEmptyBody {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -68,7 +73,12 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 	}{}
 
-	if err := DecodeRequestBody(w, r, &user); err != nil {
+	if err := BindJSON(r, &user); err != nil {
+		if err == ErrEmptyBody {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
