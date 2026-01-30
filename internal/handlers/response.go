@@ -12,14 +12,8 @@ type Payload struct {
 
 type P = Payload
 
-func Response(w http.ResponseWriter, payload Payload, statusCode int) {
-	response, err := json.Marshal(payload)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+func Response(w http.ResponseWriter, payload Payload, statusCode int) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	w.Write(response)
-
+	return json.NewEncoder(w).Encode(payload)
 }
