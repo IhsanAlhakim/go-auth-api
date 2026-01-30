@@ -5,19 +5,16 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/IhsanAlhakim/go-auth-api/internal/config"
 	"github.com/IhsanAlhakim/go-auth-api/internal/database"
 	"github.com/IhsanAlhakim/go-auth-api/internal/mux"
 	"github.com/IhsanAlhakim/go-auth-api/internal/routes"
-	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Failed to loading .env file: %v", err)
-	}
+	cfg := config.Load()
 
 	db, err = database.Connect()
 	if err != nil {
