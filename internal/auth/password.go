@@ -1,4 +1,4 @@
-package utils
+package auth
 
 import (
 	"net/http"
@@ -16,7 +16,7 @@ func GenerateHashPassword(w http.ResponseWriter, password string) ([]byte, error
 	return hash, nil
 }
 
-func IsPasswordCorrect(w http.ResponseWriter, hash string, password string) error {
+func VerifyPassword(w http.ResponseWriter, hash string, password string) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
 			http.Error(w, "Incorrect sign in credentials", http.StatusUnauthorized)

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
+	"github.com/IhsanAlhakim/go-auth-api/internal/auth"
 	"github.com/IhsanAlhakim/go-auth-api/internal/validation"
 )
 
@@ -53,7 +53,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := utils.GenerateHashPassword(w, user.Password)
+	hashedPassword, err := auth.GenerateHashPassword(w, user.Password)
 	if err != nil {
 		return
 	}

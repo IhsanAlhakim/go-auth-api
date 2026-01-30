@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
+	"github.com/IhsanAlhakim/go-auth-api/internal/auth"
 	"github.com/IhsanAlhakim/go-auth-api/internal/validation"
 )
 
@@ -45,7 +45,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := utils.IsPasswordCorrect(w, user.Password, credentials.Password); err != nil {
+	if err := auth.VerifyPassword(w, user.Password, credentials.Password); err != nil {
 		return
 	}
 
