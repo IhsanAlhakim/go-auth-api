@@ -11,6 +11,7 @@ type Config struct {
 	DBName     string
 	DBUsername string
 	DBPassword string
+	DBAddr     string
 
 	SessionID string
 	EcryptKey string
@@ -37,6 +38,7 @@ func Load() *Config {
 		DBName:        os.Getenv("DB_NAME"),
 		DBUsername:    os.Getenv("DB_USERNAME"),
 		DBPassword:    os.Getenv("DB_PASSWORD"),
+		DBAddr:        os.Getenv("DB_ADDRESS"),
 		SessionID:     os.Getenv("SESSION_ID"),
 		EcryptKey:     os.Getenv("ENCRYPTION_KEY"),
 		RedisAddr:     os.Getenv("REDIS_ADDRESS"),
