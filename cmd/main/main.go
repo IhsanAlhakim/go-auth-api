@@ -1,9 +1,15 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/IhsanAlhakim/go-auth-api/internal/config"
 	"github.com/IhsanAlhakim/go-auth-api/internal/database"
@@ -42,8 +48,23 @@ func main() {
 	server.Addr = cfg.Port
 	server.Handler = mux
 
-	log.Println("Server started at localhost:8080")
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	go func() {
+		log.Println("Server started at localhost" + cfg.Port)
+		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+		log.Println("Stopped serving new connection.")
+	}()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	<-sigChan
+
+	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownRelease()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Fatalf("HTTP shutdown error: %v", err)
 	}
+	log.Println("Graceful shutdown complete")
 }
