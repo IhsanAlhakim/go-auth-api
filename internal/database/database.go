@@ -3,20 +3,20 @@ package database
 import (
 	"database/sql"
 	"log"
-	"os"
 
+	"github.com/IhsanAlhakim/go-auth-api/internal/config"
 	"github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
 
-func Connect() (*sql.DB, error) {
+func Connect(cfg *config.Config) (*sql.DB, error) {
 	config := mysql.NewConfig()
-	config.User = os.Getenv("DB_USERNAME")
-	config.Passwd = os.Getenv("DB_PASSWORD")
+	config.User = cfg.DBUsername
+	config.Passwd = cfg.DBPassword
 	config.Net = "tcp"
-	config.Addr = "127.0.0.1:3306"
-	config.DBName = os.Getenv("DB_NAME")
+	config.Addr = cfg.DBAddr
+	config.DBName = cfg.DBName
 
 	var err error
 
@@ -27,8 +27,4 @@ func Connect() (*sql.DB, error) {
 
 	log.Println("Connected to database")
 	return db, nil
-}
-
-func GetDB() *sql.DB {
-	return db
 }

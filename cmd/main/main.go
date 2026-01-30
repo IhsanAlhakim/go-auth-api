@@ -16,7 +16,7 @@ var db *sql.DB
 func main() {
 	cfg := config.Load()
 
-	db, err = database.Connect()
+	db, err := database.Connect(cfg)
 	if err != nil {
 		log.Panicf("Failed to connect to the database: %v", err)
 	}
