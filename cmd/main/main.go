@@ -45,11 +45,11 @@ func main() {
 	routes.Register(mux, m, h)
 
 	server := new(http.Server)
-	server.Addr = cfg.Port
+	server.Addr = ":" + cfg.Port
 	server.Handler = mux
 
 	go func() {
-		log.Println("Server started at localhost" + cfg.Port)
+		log.Println("Server started at localhost:" + cfg.Port)
 		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Failed to start server: %v", err)
 		}
