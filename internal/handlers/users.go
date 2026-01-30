@@ -53,8 +53,9 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := auth.GenerateHashPassword(w, user.Password)
+	hashedPassword, err := auth.GenerateHashPassword(user.Password)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

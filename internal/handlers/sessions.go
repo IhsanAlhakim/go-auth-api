@@ -6,6 +6,7 @@ import (
 
 	"github.com/IhsanAlhakim/go-auth-api/internal/auth"
 	"github.com/IhsanAlhakim/go-auth-api/internal/validation"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +46,12 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := auth.VerifyPassword(w, user.Password, credentials.Password); err != nil {
+	if err := auth.VerifyPassword(user.Password, credentials.Password); err != nil {
+		if err == bcrypt.ErrMismatchedHashAndPassword {
+			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
