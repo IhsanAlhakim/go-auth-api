@@ -45,6 +45,6 @@ func Load() *Config {
 		RedisUsername: os.Getenv("REDIS_USERNAME"),
 		RedisPassword: os.Getenv("REDIS_PASSWORD"),
 		RedisDB:       os.Getenv("REDIS_DB"),
-		Port:          os.Getenv("PORT"),
+		Port:          port,
 	}
 }
