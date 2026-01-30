@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
+	"github.com/IhsanAlhakim/go-auth-api/internal/validation"
 )
 
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -23,11 +24,11 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := utils.CheckStructEmptyProperty(credentials); err != nil {
+	if err := validation.CheckStructEmptyProperty(credentials); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := utils.CheckStructWhitespaceProperty(credentials); err != nil {
+	if err := validation.CheckStructWhitespaceProperty(credentials); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

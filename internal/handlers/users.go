@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/IhsanAlhakim/go-auth-api/internal/utils"
+	"github.com/IhsanAlhakim/go-auth-api/internal/validation"
 )
 
 type User struct {
@@ -43,11 +44,11 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := utils.CheckStructEmptyProperty(user); err != nil {
+	if err := validation.CheckStructEmptyProperty(user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := utils.CheckStructWhitespaceProperty(user); err != nil {
+	if err := validation.CheckStructWhitespaceProperty(user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -82,11 +83,11 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := utils.CheckStructEmptyProperty(user); err != nil {
+	if err := validation.CheckStructEmptyProperty(user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := utils.CheckStructWhitespaceProperty(user); err != nil {
+	if err := validation.CheckStructWhitespaceProperty(user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
